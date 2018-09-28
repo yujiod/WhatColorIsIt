@@ -46,14 +46,14 @@ class WhatColorIsItView: ScreenSaverView, WhatColorIsItDefaultsDelegate {
     fileprivate var currentDate: Date = Date()
     
     /// The main font.
-    fileprivate var mainFont: NSFont = NSFont.monospacedDigitSystemFont(ofSize: 0.0, weight: NSFont.Weight.ultraLight)
+    fileprivate var mainFont: NSFont = NSFont(name: "Inconsolata", size: 40)!
     
     /// The paragraph style.
     fileprivate let paragraphStyle: NSMutableParagraphStyle = NSMutableParagraphStyle()
     
     /// The secondary font.
-    fileprivate var secondaryFont: NSFont = NSFont.monospacedDigitSystemFont(ofSize: 0.0, weight: NSFont.Weight.ultraLight)
-    
+    fileprivate var secondaryFont: NSFont = NSFont(name: "Inconsolata", size: 20)!
+
     //----------------------------
     // MARK: Initalization
     //----------------------------
@@ -77,7 +77,7 @@ class WhatColorIsItView: ScreenSaverView, WhatColorIsItDefaultsDelegate {
         
         // Set the time formatter
         hexTimeFormatter.dateFormat = "'#'HHmmss"
-        timeFormatter.dateFormat = "HH:mm:ss"
+        timeFormatter.dateFormat = "20.YY.MM.dd.HH.mm.ss"
         
         // Set the paragraph style
         paragraphStyle.alignment = NSTextAlignment.center
@@ -110,7 +110,7 @@ class WhatColorIsItView: ScreenSaverView, WhatColorIsItDefaultsDelegate {
     }
     
     override var hasConfigureSheet: Bool {
-        return true
+        return false
     }
     
     override var configureSheet: NSWindow? {
@@ -135,9 +135,10 @@ class WhatColorIsItView: ScreenSaverView, WhatColorIsItDefaultsDelegate {
         
         // Get the strings to display
         let hexString: String = hexTimeFormatter.string(from: currentDate)
+        let unixtimeString: String = Int(currentDate.timeIntervalSince1970).description
         let timeString: String = timeFormatter.string(from: currentDate)
-        let mainString: String = defaults.mainLabelDisplayValue == .None ? "" : (defaults.mainLabelDisplayValue == .Hex ? hexString : timeString)
-        let secondaryString: String = defaults.secondaryLabelDisplayValue == .None ? "" : (defaults.secondaryLabelDisplayValue == .Hex ? hexString : timeString)
+        let mainString = unixtimeString
+        let secondaryString = timeString
         
         // Set the colors to display
         let hexColor: NSColor = colorFromHexString(hexString)!
@@ -158,7 +159,7 @@ class WhatColorIsItView: ScreenSaverView, WhatColorIsItDefaultsDelegate {
         let mainRect: NSRect = defaults.secondaryLabelDisplayValue != .None ?
             NSMakeRect(
                 bounds.origin.x,
-                bounds.origin.y + (bounds.size.height / 2.0),
+                bounds.origin.y + (bounds.size.height / 2.3),
                 bounds.size.width,
                 mainSize.height) :
             NSMakeRect(
@@ -173,13 +174,13 @@ class WhatColorIsItView: ScreenSaverView, WhatColorIsItDefaultsDelegate {
         let secondaryAttributes: [NSAttributedString.Key: AnyObject] = [
             NSAttributedString.Key.font: secondaryFont,
             NSAttributedString.Key.paragraphStyle: paragraphStyle,
-            NSAttributedString.Key.foregroundColor: textColor
+            NSAttributedString.Key.foregroundColor: NSColor.gray
         ]
         let secondarySize: NSSize = (secondaryString as NSString).size(withAttributes: secondaryAttributes)
         let secondaryRect: NSRect = defaults.mainLabelDisplayValue != .None ?
             NSMakeRect(
             bounds.origin.x,
-            (bounds.size.height / 2.0) - mainSize.height,
+            (bounds.size.height / 1.85) - mainSize.height,
             bounds.size.width,
                 secondarySize.height) :
             NSMakeRect(
@@ -193,8 +194,8 @@ class WhatColorIsItView: ScreenSaverView, WhatColorIsItDefaultsDelegate {
     
     fileprivate func updateFontIfNecessary() {
         if mainFont.pointSize != bounds.size.height / 7.0 {
-            mainFont = NSFont.monospacedDigitSystemFont(ofSize: bounds.size.height / 7.0, weight: NSFont.Weight.ultraLight)
-            secondaryFont = NSFont.monospacedDigitSystemFont(ofSize: bounds.size.height / 21.0, weight: NSFont.Weight.ultraLight)
+            mainFont = NSFont(name: "Inconsolata", size: bounds.size.height / 7.0)!
+            secondaryFont = NSFont(name: "Inconsolata", size: bounds.size.height / 21.0)!
         }
     }
     
