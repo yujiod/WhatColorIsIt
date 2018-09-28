@@ -180,7 +180,7 @@ class WhatColorIsItView: ScreenSaverView, WhatColorIsItDefaultsDelegate {
         let secondaryRect: NSRect = defaults.mainLabelDisplayValue != .None ?
             NSMakeRect(
             bounds.origin.x,
-            (bounds.size.height / 1.85) - mainSize.height,
+            (bounds.size.height / 1.88) - mainSize.height,
             bounds.size.width,
                 secondarySize.height) :
             NSMakeRect(
@@ -190,6 +190,22 @@ class WhatColorIsItView: ScreenSaverView, WhatColorIsItDefaultsDelegate {
                 secondarySize.height)
         
         (secondaryString as NSString).draw(in: secondaryRect, withAttributes: secondaryAttributes)
+
+        let hexAttributes: [NSAttributedString.Key: AnyObject] = [
+            NSAttributedString.Key.font: NSFont(name: "Inconsolata", size: 30)!,
+            NSAttributedString.Key.paragraphStyle: paragraphStyle,
+            NSAttributedString.Key.foregroundColor: NSColor.gray
+        ]
+        let hexSize: NSSize = (hexString as NSString).size(withAttributes: hexAttributes)
+        let hexRect: NSRect = NSMakeRect(
+            bounds.size.width - hexSize.width - 20,
+            20,
+            hexSize.width,
+            hexSize.height
+        )
+        
+        (hexString as NSString).draw(in: hexRect, withAttributes: hexAttributes)
+
     }
     
     fileprivate func updateFontIfNecessary() {
