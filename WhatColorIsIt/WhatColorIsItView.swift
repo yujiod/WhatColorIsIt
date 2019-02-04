@@ -28,127 +28,130 @@ import ScreenSaver
 
 /// The view that displays the screen saver.
 class WhatColorIsItView: ScreenSaverView, WhatColorIsItDefaultsDelegate {
-    
+
     //----------------------------
     // MARK: Properties
     //----------------------------
-    
+
     /// The defaults controller.
     fileprivate let defaults: WhatColorIsItDefaults = WhatColorIsItDefaults()
-    
+
     /// The date formatter that converts the current time to a hex string.
     fileprivate let hexTimeFormatter: DateFormatter = DateFormatter()
-    
+
     /// The date formatter that converts the current time to a string.
     fileprivate let timeFormatter: DateFormatter = DateFormatter()
-    
+
     /// The current date.
     fileprivate var currentDate: Date = Date()
-    
+
     /// The main font.
     fileprivate var mainFont: NSFont = NSFont(name: "Inconsolata", size: 40)!
-    
+
     /// The paragraph style.
     fileprivate let paragraphStyle: NSMutableParagraphStyle = NSMutableParagraphStyle()
-    
+
     /// The secondary font.
     fileprivate var secondaryFont: NSFont = NSFont(name: "Inconsolata", size: 20)!
+
+    /// The tertiary font.
+    fileprivate var tertiaryFont: NSFont = NSFont(name: "Inconsolata", size: 16)!
 
     //----------------------------
     // MARK: Initalization
     //----------------------------
-    
+
     override init?(frame: NSRect, isPreview: Bool) {
         super.init(frame: frame, isPreview: isPreview)
         sharedSetup()
     }
-    
+
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         sharedSetup()
     }
-    
+
     func sharedSetup() {
         // Set the screen saver properties
         animationTimeInterval = 1.0
-        
+
         // Set the defaults delegate
         defaults.delegate = self
-        
+
         // Set the time formatter
         hexTimeFormatter.dateFormat = "'#'HHmmss"
         timeFormatter.dateFormat = "20.YY.MM.dd.HH.mm.ss"
-        
+
         // Set the paragraph style
         paragraphStyle.alignment = NSTextAlignment.center
-        
+
         // Load the defauts
         loadFromDefaults()
     }
-    
+
     //----------------------------
     // MARK: Configuration
     //----------------------------
-    
+
     func whatColorIsItDefaultsConfigurationDidChange() {
         loadFromDefaults()
     }
-    
+
     fileprivate func loadFromDefaults() {
         // Refresh the display.
         needsDisplay = true
     }
-    
+
     //----------------------------
     // MARK: Screen Saver
     //----------------------------
-    
+
     override func animateOneFrame() {
         // Update the display with the current date.
         currentDate = Date()
         setNeedsDisplay(bounds)
     }
-    
+
     override var hasConfigureSheet: Bool {
         return false
     }
-    
+
     override var configureSheet: NSWindow? {
         struct Holder {
             static var controller: WhatColorIsItConfigurationWindowController = WhatColorIsItConfigurationWindowController()
         }
-        
+
         Holder.controller.loadWindow()
         return Holder.controller.window
     }
-    
+
     //----------------------------
     // MARK: Drawing and Layout
     //----------------------------
-    
+
     override func draw(_ rect: NSRect) {
         // Draw the background color.
         super.draw(rect)
-        
+
         // Update the font size if necessary
         updateFontIfNecessary()
-        
+
         // Get the strings to display
         let hexString: String = hexTimeFormatter.string(from: currentDate)
         let unixtimeString: String = Int(currentDate.timeIntervalSince1970).description
         let timeString: String = timeFormatter.string(from: currentDate)
         let mainString = unixtimeString
         let secondaryString = timeString
-        
+
         // Set the colors to display
         let hexColor: NSColor = colorFromHexString(hexString)!
         let textColor: NSColor = !defaults.inverted ? NSColor.white : hexColor
         let backgroundColor: NSColor = !defaults.inverted ? hexColor : NSColor.white
-        
+
         // Draw the background
         backgroundColor.setFill()
         rect.fill()
-        
+
         // Draw the main text
         let mainAttributes: [NSAttributedString.Key: AnyObject] = [
             NSAttributedString.Key.font: mainFont,
@@ -167,9 +170,9 @@ class WhatColorIsItView: ScreenSaverView, WhatColorIsItDefaultsDelegate {
                 (bounds.size.height - mainSize.height) / 2.0,
                 bounds.size.width,
                 mainSize.height)
-        
+
         (mainString as NSString).draw(in: mainRect, withAttributes: mainAttributes)
-        
+
         // Draw the secondary Text
         let secondaryAttributes: [NSAttributedString.Key: AnyObject] = [
             NSAttributedString.Key.font: secondaryFont,
@@ -188,11 +191,12 @@ class WhatColorIsItView: ScreenSaverView, WhatColorIsItDefaultsDelegate {
                 (bounds.size.height - secondarySize.height) / 2.0,
                 bounds.size.width,
                 secondarySize.height)
-        
+
         (secondaryString as NSString).draw(in: secondaryRect, withAttributes: secondaryAttributes)
 
+        // Draw the tertiary Text
         let hexAttributes: [NSAttributedString.Key: AnyObject] = [
-            NSAttributedString.Key.font: NSFont(name: "Inconsolata", size: 30)!,
+            NSAttributedString.Key.font: tertiaryFont,
             NSAttributedString.Key.paragraphStyle: paragraphStyle,
             NSAttributedString.Key.foregroundColor: NSColor.gray
         ]
@@ -203,24 +207,25 @@ class WhatColorIsItView: ScreenSaverView, WhatColorIsItDefaultsDelegate {
             hexSize.width,
             hexSize.height
         )
-        
+
         (hexString as NSString).draw(in: hexRect, withAttributes: hexAttributes)
 
     }
-    
+
     fileprivate func updateFontIfNecessary() {
         if mainFont.pointSize != bounds.size.height / 7.0 {
             mainFont = NSFont(name: "Inconsolata", size: bounds.size.height / 7.0)!
             secondaryFont = NSFont(name: "Inconsolata", size: bounds.size.height / 21.0)!
+            tertiaryFont = NSFont(name: "Inconsolata", size: bounds.size.height / 26.0)!
         }
     }
-    
+
     fileprivate func colorFromHexString(_ string: String) -> NSColor? {
         var red:   CGFloat = 0.0
         var green: CGFloat = 0.0
         var blue:  CGFloat = 0.0
         var alpha: CGFloat = 1.0
-        
+
         if string.hasPrefix("#") {
             let index   = string.index(string.startIndex, offsetBy: 1)
             let hex     = string.suffix(from: index)
