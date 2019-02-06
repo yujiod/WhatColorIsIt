@@ -55,7 +55,7 @@ class WhatColorIsItView: ScreenSaverView, WhatColorIsItDefaultsDelegate {
     fileprivate var secondaryFont: NSFont = NSFont(name: "Inconsolata", size: 20)!
 
     /// The tertiary font.
-    fileprivate var tertiaryFont: NSFont = NSFont(name: "Inconsolata", size: 16)!
+    fileprivate var tertiaryFont: NSFont = NSFont(name: "Inconsolata", size: 12)!
 
     //----------------------------
     // MARK: Initalization
@@ -216,7 +216,7 @@ class WhatColorIsItView: ScreenSaverView, WhatColorIsItDefaultsDelegate {
         if mainFont.pointSize != bounds.size.height / 7.0 {
             mainFont = NSFont(name: "Inconsolata", size: bounds.size.height / 7.0)!
             secondaryFont = NSFont(name: "Inconsolata", size: bounds.size.height / 21.0)!
-            tertiaryFont = NSFont(name: "Inconsolata", size: bounds.size.height / 26.0)!
+            tertiaryFont = NSFont(name: "Inconsolata", size: bounds.size.height / 35.0)!
         }
     }
 
